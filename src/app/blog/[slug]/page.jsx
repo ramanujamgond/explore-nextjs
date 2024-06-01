@@ -14,23 +14,44 @@ import { getPost } from '@/lib/data';
 //     return response.json();
 // }
 
+const getPostData = async (slug) => {
+    const response = await fetch(`http://localhost:3000/api/blog/${slug}`);
+    if (!response.ok) {
+        throw new Error("Something went wrong");
+    }
+
+    return response.json();
+}
+
+export const generateMetadata = async ({ params }) => {
+    const { slug } = params;
+    const postData = await getPost(slug);
+    return {
+        title: postData.title,
+        description: postData.desc,
+    }
+}
+
 const SinglePostPage = async ({ params }) => {
 
     const { slug } = params;
 
-    // const postData = await getPostData(slug);
+    const postData = await getPostData(slug);
 
-    const postData = await getPost(slug);
+    // FETCH DATA WITHOUT API
+    // const postData = await getPost(slug);
 
     return (
         <div className={styles.container}>
-            <div className={styles.imgContainer}>
-                <Image src="https://images.pexels.com/photos/19457037/pexels-photo-19457037/free-photo-of-street-by-palais-garnier-in-paris-france.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="" fill className={styles.img} />
-            </div>
+            {postData.img && (
+                <div className={styles.imgContainer}>
+                    <Image src={postData.img} alt="" fill className={styles.img} />
+                </div>
+            )}
+
             <div className={styles.textContainer}>
                 <h1 className={styles.title}>{postData?.title}</h1>
                 <div className={styles.detail}>
-                    <Image className={styles.avatar} src="https://images.pexels.com/photos/19562913/pexels-photo-19562913/free-photo-of-scenic-view-of-a-mountain-range.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load" alt="" width={50} height={50} />
                     {/* React suspense is a built-in React component which lets you temporarily render a fallback UI while its children are still loading. */}
                     {postData && (
                         <Suspense fallback={<div>Loading...</div>}>
@@ -39,10 +60,10 @@ const SinglePostPage = async ({ params }) => {
                     )}
                     <div className={styles.detailText}>
                         <span className={styles.detailTitle}>Published</span>
-                        <span className={styles.detailValue}>30.05.2024</span>
+                        <span className={styles.detailValue}>{postData.createdAt.toString().slice(4, 16)}</span>
                     </div>
                 </div>
-                <p className={styles.content}>{postData?.body}</p>
+                <p className={styles.content}>{postData?.desc}</p>
             </div>
         </div>
     )
