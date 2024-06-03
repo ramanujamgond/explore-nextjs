@@ -10,14 +10,11 @@ const NavigationTestPage = () => {
 
     // get the path name 
     const pathname = usePathname();
-    console.log("pathname", pathname);
 
     // extract query from the url parameters
     const query = useSearchParams();
-    console.log(query.get("q"));
 
     const handleClick = () => {
-        console.log("Clicked");
         // router.push("/");
         // router.replace("/");
         // router.refresh();
